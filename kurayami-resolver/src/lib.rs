@@ -8,8 +8,10 @@ pub mod doh;
 pub mod filter;
 pub mod proxy;
 pub mod system;
+pub mod tor;
 
 pub use doh::DohBackend;
 pub use filter::{BlocklistFilter, CompositeFilter, RegexFilter};
 pub use proxy::DnsProxy;
 pub use system::SystemBackend;
+pub use tor::TorDnsBackend;

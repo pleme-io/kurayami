@@ -2,15 +2,28 @@
 
 use std::net::SocketAddr;
 
-use clap::{Parser, Subcommand};
+use std::sync::Arc;
+
+use clap::{Parser, Subcommand, ValueEnum};
 use kurayami_core::QueryType;
-use kurayami_resolver::{BlocklistFilter, DnsProxy, DohBackend, SystemBackend};
+use kurayami_resolver::{BlocklistFilter, DnsProxy, DohBackend, SystemBackend, TorDnsBackend};
 
 #[derive(Parser)]
 #[command(name = "kurayami", version, about = "Privacy DNS resolver with Tor/DoH/DoT backends")]
 struct Cli {
     #[command(subcommand)]
     command: Command,
+}
+
+/// Which DNS backend to use.
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum BackendChoice {
+    /// OS resolver via `tokio::net::lookup_host`.
+    System,
+    /// DNS-over-HTTPS (Cloudflare JSON API).
+    Doh,
+    /// Resolve through the Tor network.
+    Tor,
 }
 
 #[derive(Subcommand)]
@@ -44,6 +57,10 @@ enum Command {
         /// Record type (A, AAAA, CNAME, MX, TXT).
         #[arg(short = 't', long, default_value = "A")]
         query_type: String,
+
+        /// DNS backend to use for the test query.
+        #[arg(short, long, value_enum, default_value_t = BackendChoice::System)]
+        backend: BackendChoice,
     },
 }
 
@@ -110,21 +127,39 @@ async fn main() -> anyhow::Result<()> {
             println!("kurayami: cache flush not yet implemented");
         }
 
-        Command::Test { domain, query_type } => {
+        Command::Test {
+            domain,
+            query_type,
+            backend,
+        } => {
             let qt = parse_query_type(&query_type)?;
-            let backend = SystemBackend::new();
+            let dns_backend: Box<dyn kurayami_core::DnsBackend> = match backend {
+                BackendChoice::System => Box::new(SystemBackend::new()),
+                BackendChoice::Doh => Box::new(DohBackend::default()),
+                BackendChoice::Tor => {
+                    tracing::info!("bootstrapping Tor transport (this may take 10-30s)...");
+                    let transport = kakuremino::TorTransport::bootstrap()
+                        .await
+                        .map_err(|e| anyhow::anyhow!("Tor bootstrap failed: {e}"))?;
+                    Box::new(TorDnsBackend::new(Arc::new(transport)))
+                }
+            };
+
             let query = kurayami_core::DnsQuery {
                 name: domain.clone(),
                 query_type: qt,
                 source_addr: None,
             };
 
-            match kurayami_core::DnsBackend::resolve(&backend, &query).await {
+            match dns_backend.resolve(&query).await {
                 Ok(response) => {
-                    println!("query: {domain} ({query_type})");
+                    println!("query: {domain} ({query_type}) via {}", dns_backend.name());
                     println!("answers: {}", response.answers.len());
                     for record in &response.answers {
-                        println!("  {} {} TTL={} {:?}", record.name, format!("{:?}", record.record_type), record.ttl, record.data);
+                        println!(
+                            "  {} {:?} TTL={} {:?}",
+                            record.name, record.record_type, record.ttl, record.data
+                        );
                     }
                 }
                 Err(e) => {

@@ -15,6 +15,7 @@ path = "src/main.rs"
 [dependencies]
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
+kakuremino = { git = "https://github.com/pleme-io/kakuremino", default-features = false, features = ["tor"] }
 kurayami-core = { path = "../kurayami-core" }
 kurayami-resolver = { path = "../kurayami-resolver" }
 shikumi = "0.1"
