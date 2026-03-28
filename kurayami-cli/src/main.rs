@@ -86,17 +86,10 @@ fn parse_query_type(s: &str) -> kurayami_core::Result<QueryType> {
     }
 }
 
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
-        )
-        .init();
-
-    let cli = Cli::parse();
-
+/// Execute the CLI with the given arguments.
+///
+/// Extracted for testability — `main` delegates here after initializing tracing.
+async fn execute(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Command::Start {
             listen,
@@ -108,8 +101,7 @@ async fn main() -> anyhow::Result<()> {
                 "doh" => Box::new(DohBackend::default()),
                 "dot" => Box::new(DotBackend::cloudflare()),
                 other => {
-                    eprintln!("unknown backend: {other}");
-                    std::process::exit(1);
+                    anyhow::bail!("unknown backend: {other}");
                 }
             };
 
@@ -163,18 +155,30 @@ async fn main() -> anyhow::Result<()> {
                     println!("answers: {}", response.answers.len());
                     for record in &response.answers {
                         println!(
-                            "  {} {:?} TTL={} {:?}",
+                            "  {} {} TTL={} {}",
                             record.name, record.record_type, record.ttl, record.data
                         );
                     }
                 }
                 Err(e) => {
-                    eprintln!("resolve error: {e}");
-                    std::process::exit(1);
+                    anyhow::bail!("resolve error: {e}");
                 }
             }
         }
     }
 
     Ok(())
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+        )
+        .init();
+
+    let cli = Cli::parse();
+    execute(cli).await
 }

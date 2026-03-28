@@ -197,7 +197,9 @@ impl DnsProxy {
                 tracing::info!(domain = %domain, "blocked by filter");
                 let nxdomain = build_nxdomain(&request);
                 if let Ok(bytes) = nxdomain.to_vec() {
-                    let _ = socket.send_to(&bytes, src).await;
+                    if let Err(e) = socket.send_to(&bytes, src).await {
+                        tracing::warn!(error = %e, "failed to send NXDOMAIN response");
+                    }
                 }
                 continue;
             }
@@ -227,7 +229,9 @@ impl DnsProxy {
 
             match response_msg.to_vec() {
                 Ok(bytes) => {
-                    let _ = socket.send_to(&bytes, src).await;
+                    if let Err(e) = socket.send_to(&bytes, src).await {
+                        tracing::warn!(error = %e, "failed to send DNS response");
+                    }
                 }
                 Err(e) => {
                     tracing::warn!(error = %e, "failed to serialize DNS response");

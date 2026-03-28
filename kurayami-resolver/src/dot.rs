@@ -15,6 +15,7 @@ use kurayami_core::{
 };
 
 /// DNS-over-TLS backend.
+#[derive(Debug)]
 pub struct DotBackend {
     server_addr: SocketAddr,
     tls_name: String,
