@@ -1,0 +1,19 @@
+[package]
+name = "kurayami-core"
+version = "0.1.0"
+description = "Core types and traits for kurayami privacy DNS resolver"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[dependencies]
+async-trait = "0.1"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+tokio = { version = "1", features = ["net"] }
+tracing = "0.1"
+
+[lints]
+workspace = true

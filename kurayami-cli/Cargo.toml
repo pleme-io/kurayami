@@ -1,0 +1,26 @@
+[package]
+name = "kurayami-cli"
+version = "0.1.0"
+description = "CLI for kurayami privacy DNS resolver"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "kurayami"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+kurayami-core = { path = "../kurayami-core" }
+kurayami-resolver = { path = "../kurayami-resolver" }
+shikumi = "0.1"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[lints]
+workspace = true
