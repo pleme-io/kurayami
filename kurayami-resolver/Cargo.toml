@@ -10,6 +10,8 @@ repository.workspace = true
 
 [dependencies]
 async-trait = "0.1"
+hickory-proto = "0.25"
+hickory-resolver = { version = "0.25", features = ["tls-ring", "tokio"] }
 kakuremino = { git = "https://github.com/pleme-io/kakuremino", default-features = false, features = ["tor"] }
 kurayami-core = { path = "../kurayami-core" }
 regex = "1"

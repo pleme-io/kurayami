@@ -6,7 +6,9 @@ use std::sync::Arc;
 
 use clap::{Parser, Subcommand, ValueEnum};
 use kurayami_core::QueryType;
-use kurayami_resolver::{BlocklistFilter, DnsProxy, DohBackend, SystemBackend, TorDnsBackend};
+use kurayami_resolver::{
+    BlocklistFilter, DnsProxy, DohBackend, DotBackend, SystemBackend, TorDnsBackend,
+};
 
 #[derive(Parser)]
 #[command(name = "kurayami", version, about = "Privacy DNS resolver with Tor/DoH/DoT backends")]
@@ -22,6 +24,8 @@ enum BackendChoice {
     System,
     /// DNS-over-HTTPS (Cloudflare JSON API).
     Doh,
+    /// DNS-over-TLS (encrypted connection to port 853).
+    Dot,
     /// Resolve through the Tor network.
     Tor,
 }
@@ -102,6 +106,7 @@ async fn main() -> anyhow::Result<()> {
             let dns_backend: Box<dyn kurayami_core::DnsBackend> = match backend.as_str() {
                 "system" => Box::new(SystemBackend::new()),
                 "doh" => Box::new(DohBackend::default()),
+                "dot" => Box::new(DotBackend::cloudflare()),
                 other => {
                     eprintln!("unknown backend: {other}");
                     std::process::exit(1);
@@ -136,6 +141,7 @@ async fn main() -> anyhow::Result<()> {
             let dns_backend: Box<dyn kurayami_core::DnsBackend> = match backend {
                 BackendChoice::System => Box::new(SystemBackend::new()),
                 BackendChoice::Doh => Box::new(DohBackend::default()),
+                BackendChoice::Dot => Box::new(DotBackend::cloudflare()),
                 BackendChoice::Tor => {
                     tracing::info!("bootstrapping Tor transport (this may take 10-30s)...");
                     let transport = kakuremino::TorTransport::bootstrap()
