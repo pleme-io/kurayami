@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "cargo_lock_sha256": "f4889461f904e8a2d991b588e3c30432f5ccfbac470bf0b3b04288fcb449112e",
+  "cargo_lock_sha256": "4eaf1bab201b59dd6072e919d8d28f8109ef0d9c3b12a2e10fe4cb061f633bf2",
   "target_resolves": {
     "base": {
       "adler2-2.0.1": {
@@ -6320,7 +6320,7 @@
         "build_dependencies": [],
         "features": []
       },
-      "kakuremino-0.1.0": {
+      "kakuremino-0.1.1": {
         "runtime_dependencies": [
           {
             "name": "arti_client",
@@ -6361,6 +6361,28 @@
             ],
             "uses_default_features": true,
             "optional": true,
+            "target": null,
+            "tree": "target"
+          },
+          {
+            "name": "serde",
+            "package_key": "serde-1.0.228",
+            "kind": "normal",
+            "features": [
+              "derive"
+            ],
+            "uses_default_features": true,
+            "optional": false,
+            "target": null,
+            "tree": "target"
+          },
+          {
+            "name": "serde_json",
+            "package_key": "serde_json-1.0.149",
+            "kind": "normal",
+            "features": [],
+            "uses_default_features": true,
+            "optional": false,
             "target": null,
             "tree": "target"
           },
@@ -6452,7 +6474,7 @@
           },
           {
             "name": "kakuremino",
-            "package_key": "kakuremino-0.1.0",
+            "package_key": "kakuremino-0.1.1",
             "kind": "normal",
             "features": [
               "tor"
@@ -6622,7 +6644,7 @@
           },
           {
             "name": "kakuremino",
-            "package_key": "kakuremino-0.1.0",
+            "package_key": "kakuremino-0.1.1",
             "kind": "normal",
             "features": [
               "tor"
@@ -25126,7 +25148,7 @@
     "itoa-1.0.18": {
       "edition": "2021"
     },
-    "kakuremino-0.1.0": {
+    "kakuremino-0.1.1": {
       "edition": "2024"
     },
     "keccak-0.1.6": {
@@ -26044,7 +26066,7 @@
     }
   },
   "git_nar_sha256": {
-    "kakuremino-0.1.0": "sha256-bV+QKTxAx3q79ujvrSVcYOqKuWObDwtLzvjgaJXZ74g="
+    "kakuremino-0.1.1": "sha256-y8bh6cZ42PQi97eIp9GcIi38+rZTq5o9qsH+Vau2p+A="
   },
   "flake_metadata": {}
 }

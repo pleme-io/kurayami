@@ -1932,13 +1932,15 @@ dependencies = [
 
 [[package]]
 name = "kakuremino"
-version = "0.1.0"
-source = "git+https://github.com/pleme-io/kakuremino#0b6aed59740a80a07a6bf6d5ce2a65a5d1a7af51"
+version = "0.1.1"
+source = "git+https://github.com/pleme-io/kakuremino#5356f44e82549b127fa0358beec512f6553bfa9d"
 dependencies = [
  "arti-client",
  "async-trait",
  "pin-project-lite",
  "rusqlite",
+ "serde",
+ "serde_json",
  "thiserror 2.0.18",
  "tokio",
  "tokio-socks",

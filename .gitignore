@@ -1,3 +1,4 @@
 /target
 Cargo.nix
 Cargo.build-spec.json
+crate-hashes.json
